@@ -7,5 +7,7 @@ import (
 
 func main() {
 	fmt.Println("Booted go-cipher!")
-	fmt.Println(encryption.GenerateCipher(128))
+	key := encryption.GenerateCipher(128)
+	encrypted := encryption.Encrypt(key, "suhail")
+	fmt.Println(string(encrypted))
 }

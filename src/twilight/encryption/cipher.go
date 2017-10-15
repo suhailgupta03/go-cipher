@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type cipher struct {
+type cryptogram struct {
 	characterList  []string // Slice of characters used to create a cipher
 	allowedBitSize [3]int   // Allowed bit size list
 }
@@ -47,11 +47,11 @@ func GenerateCipher(size int) string {
 }
 
 // Returns the initialized cipher prototype
-func cipherPrototype() cipher {
+func cipherPrototype() cryptogram {
 	_charList := getCharacterList()
 	_allowedBitSize := getAllowedBitSize()
 
-	_cipher := cipher{characterList: _charList, allowedBitSize: _allowedBitSize}
+	_cipher := cryptogram{characterList: _charList, allowedBitSize: _allowedBitSize}
 
 	return _cipher
 }

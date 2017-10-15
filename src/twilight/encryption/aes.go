@@ -3,8 +3,7 @@ package encryption
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/rand"
-	"io"
+	"encoding/hex"
 )
 
 //Encrypt ...
@@ -12,7 +11,7 @@ import (
 // and returns the encrypted string
 // key (string) is the key to encrypt the
 // text (string) passed
-func Encrypt(key string, text string) []byte {
+func Encrypt(key string, text string, nonce []byte) []byte {
 
 	if len(text) == 0 {
 		panic("Text cannot be empty")
@@ -33,15 +32,39 @@ func Encrypt(key string, text string) []byte {
 		if err != nil {
 			panic(err.Error())
 		}
-		nonce := make([]byte, 12)
-		if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-			panic(err.Error())
-		}
+
 		encrypted := aesgcm.Seal(nil, nonce, []byte(text), nil)
 		return encrypted
 	}
 
 	panic("Invalid encryption key passed. Check length of the key.")
+}
+
+//Decrypt ...
+// Decryptes the slice of bytes existing in encrypted
+// form using the key (string) passed
+func Decrypt(key string, encrypted []byte, nonce []byte) []byte {
+	if len(encrypted) == 0 {
+		panic("Slice of encrypted bytes cannot be empty")
+	}
+
+	if validateEncryptionKey(key) {
+		_encrypted, err := hex.DecodeString(hex.EncodeToString(encrypted))
+		_nonce, err := hex.DecodeString(hex.EncodeToString(nonce))
+
+		block, err := aes.NewCipher([]byte(key))
+		if err != nil {
+			panic(err.Error())
+		}
+
+		aesgcm, err := cipher.NewGCM(block)
+		if err != nil {
+			panic(err.Error())
+		}
+		plaintext, err := aesgcm.Open(nil, _nonce, _encrypted, nil)
+		return plaintext
+	}
+	panic("Invalid encryption key passed. Check length of the key passed")
 }
 
 // Validate the size of the encryption key

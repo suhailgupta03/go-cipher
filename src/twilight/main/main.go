@@ -14,9 +14,9 @@ func main() {
 	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
 		panic(err.Error())
 	}
-	encrypted := encryption.Encrypt(key, "suhail", nonce)
-	fmt.Printf("%x\n", encrypted)
+	encrypted := encryption.Encrypt(key, "suhail", nonce) // Returns slice of bytes
 
-	decrypted := encryption.Decrypt(key, encrypted, nonce)
+	// key = encryption.GenerateCipher(128)
+	decrypted := encryption.Decrypt(key, encrypted, nonce) // Returns slice of bytes
 	fmt.Printf("%s\n", decrypted)
 }

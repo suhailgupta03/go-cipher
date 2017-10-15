@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/hex"
+	"fmt"
 )
 
 //Encrypt ...
@@ -43,6 +44,8 @@ func Encrypt(key string, text string, nonce []byte) []byte {
 //Decrypt ...
 // Decryptes the slice of bytes existing in encrypted
 // form using the key (string) passed
+// Returning an empty slice of bytes signifies that decryption
+// attempt failed for the key passed
 func Decrypt(key string, encrypted []byte, nonce []byte) []byte {
 	if len(encrypted) == 0 {
 		panic("Slice of encrypted bytes cannot be empty")
@@ -62,6 +65,12 @@ func Decrypt(key string, encrypted []byte, nonce []byte) []byte {
 			panic(err.Error())
 		}
 		plaintext, err := aesgcm.Open(nil, _nonce, _encrypted, nil)
+		if err != nil {
+			plaintext = make([]byte, 0) // Create an empty slice to return
+			logger(key, err.Error())
+		} else {
+			logger(key, "Successfully decrypted")
+		}
 		return plaintext
 	}
 	panic("Invalid encryption key passed. Check length of the key passed")
@@ -77,4 +86,11 @@ func validateEncryptionKey(keys string) bool {
 	}
 	return false
 
+}
+
+func logger(key string, message string) {
+	_message := "Message: " + message
+	_message += " ... Key used: " + key
+
+	fmt.Println(_message)
 }
